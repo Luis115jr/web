@@ -3,93 +3,83 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pregunta Interactiva</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <title>Pregunta con Opciones</title>
     <style>
         body {
-            font-family: 'Roboto', sans-serif;
+            font-family: Arial, sans-serif;
             display: flex;
             justify-content: center;
-            align-items: start;
+            align-items: center;
             height: 100vh;
-            background-color: #f0f4f8;
-            overflow: hidden;
-            margin: 0;
+            background-color: #afa7c7;
+            overflow: hidden; /* Evita que se desborde el contenido */
         }
         .container {
             text-align: center;
-            background-color: #ffffff;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-            position: relative;
-        }
-        h1 {
-            margin-bottom: 30px; /* Espacio debajo de la pregunta */
-        
         }
         .option {
-            margin: 20px;
-            padding: 15px 30px;
+            margin: 40px;
+            padding: 10px 20px;
             background-color: #007BFF;
             color: white;
             border: none;
-            border-radius: 5px;
             cursor: pointer;
-            position: absolute;
-            transition: transform 0.0s ease;
-            font-size: 19px;
+            position: absolute; /* Para poder mover el botón libremente */
+            transition: transform 0.05s ease; /* Transición rápida */
         }
         .option:hover {
             transform: scale(1.1);
-            background-color: #0056b3;
-        }
-        .message {
-            display: none;
-            margin-top: 20px;
-            font-size: 19px;
-            color: #333;
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>¿Eres Gay?</h1>
-    <button class="option" id="option1" style="top: 100%; left: 5%;">NO</button>
-    <button class="option" id="option2" style="top: 100%; left: 60%;">SI</button>
-    <div class="message" id="message"></div>
+    <h1>¿Te gustan las mujeres?</h1>
+    <button class="option" id="option1" style="top: 50%; left: 50%;">NO</button>
+    <button class="option" id="option2" style="top: 50%; left: 60%;">SI</button>
 </div>
 
 <script>
-    const option1 = document.getElementById('option1');
-    const option2 = document.getElementById('option2');
-    const message = document.getElementById('message');
+    const option1 = document.getElementById('option1'); // Opción que se moverá
+    const option2 = document.getElementById('option2'); // Opción fija
 
-    function moveOption() {
-        fetch('/move_button')
-            .then(response => response.json())
-            .then(data => {
-                option1.style.transform = `translate(${data.x}px, ${data.y}px)`;
-            });
+    function moveOption(event) {
+        const buttonRect = option1.getBoundingClientRect(); // Obtener posición actual del botón
+        const containerRect = document.body.getBoundingClientRect(); // Limites de la ventana
+        const maxX = containerRect.width - buttonRect.width; // Límite máximo en X
+        const maxY = containerRect.height - buttonRect.height; // Límite máximo en Y
+
+        // Aumentamos la sensibilidad del movimiento
+        let randomX = Math.random() * 400 - 200; // Movimiento más amplio en X
+        let randomY = Math.random() * 400 - 200; // Movimiento más amplio en Y
+
+        // Nueva posición en X (ajustamos para que no se salga del borde)
+        let newX = buttonRect.left + randomX;
+        if (newX < 0) newX = 0;
+        if (newX > maxX) newX = maxX;
+
+        // Nueva posición en Y (ajustamos para que no se salga del borde)
+        let newY = buttonRect.top + randomY;
+        if (newY < 0) newY = 0;
+        if (newY > maxY) newY = maxY;
+
+        // Aplicamos la nueva posición
+        option1.style.transform = `translate(${newX - buttonRect.left}px, ${newY - buttonRect.top}px)`;
     }
 
-    // Mover la opción "NO" cuando el mouse se acerque
+    // La opción "Rojo" se moverá cuando el mouse se acerque
     option1.addEventListener('mouseenter', moveOption);
 
-    // Acción al hacer clic en la opción "SI"
+    // El usuario puede hacer clic en la opción "Azul"
     option2.addEventListener('click', () => {
-        message.innerText = 'Ya lo sabia.';
-        message.style.display = 'block';
-        option1.style.display = 'none'; // Esconder la opción NO
-        option2.style.backgroundColor = '#28a745'; // Cambiar color al hacer clic
+        alert('YA LO SABIA');
     });
 
-    // Bloquear clics en la opción "NO"
+    // Bloquear clics en la opción "Rojo"
     option1.addEventListener('click', (e) => {
         e.preventDefault();
-        message.innerText = 'Detector de mentira activado.';
-        message.style.display = 'block';
+        alert('No puedes elegir Rojo, intenta con Azul.');
     });
 </script>
 
