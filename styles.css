@@ -1,0 +1,28 @@
+body {
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f0f0f0;
+    overflow: hidden;
+}
+
+.container {
+    text-align: center;
+}
+
+.option {
+    margin: 20px;
+    padding: 10px 20px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    cursor: pointer;
+    position: absolute;
+    transition: transform 0.05s ease; /* Transición rápida */
+}
+
+.option:hover {
+    transform: scale(1.1);
+}
