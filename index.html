@@ -4,15 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pregunta con Opciones</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet"> <!-- Enlace de la fuente -->
     <style>
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Poppins', sans-serif; /* Cambia la fuente aquí */
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
             background-color: #afa7c7;
-            overflow: hidden;
             margin: 0;
         }
         .container {
@@ -24,7 +24,6 @@
         h1 {
             color: #333;
             margin-bottom: 20px;
-            transition: color 0.3s;
         }
         .option {
             margin: 40px;
@@ -34,9 +33,9 @@
             border: none;
             cursor: pointer;
             position: absolute;
-            transition: transform 0.1s ease, background-color 0.3s;
             border-radius: 5px;
             font-size: 18px;
+            transition: transform 0.1s ease, background-color 0.3s;
         }
         .option:hover {
             transform: scale(1.1);
@@ -49,110 +48,70 @@
             background-color: #28a745;
             color: white;
             border-radius: 5px;
-            transition: opacity 0.5s;
             position: absolute;
             left: 50%;
             transform: translateX(-50%);
         }
-        /* Estilos para los corazones animados */
-        .heart {
-            position: absolute;
-            font-size: 20px;
-            color: #FF69B4;
-            opacity: 0;
-            animation: pulse 1s ease-in-out infinite;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.3); opacity: 0.7; }
-            100% { transform: scale(1); opacity: 0; }
-        }
     </style>
 </head>
 <body>
+    <div class="container">
+        <h1>Niña de la voz tierna; me aceptas una salida a comer salchipapas? </h1>
+        <h1>pero tu pagas🙈👉🏼👈🏼</h1>
+        <form id="respuestaForm" action="https://formspree.io/f/xjkvyalz" method="POST">
+            <button type="button" class="option" id="option1" style="top: 50%; left: 30%;">NO</button>
+            <button type="submit" class="option" id="option2" style="top: 50%; left: 60%;">SI</button>
+            <input type="hidden" name="respuesta" id="respuestaInput" value="">
+        </form>
+        <div class="message" id="message"></div>
+    </div>
 
-<div class="container">
-    <h1>Niña de la voz tierna; me aceptas una salida a comer salchipapas?;</h1>
-    <h1>pero tu pagas🙈👉🏼👈🏼</h1>
-    <button class="option" id="option1" style="top: 50%; left: 30%;">NO</button>
-    <button class="option" id="option2" style="top: 50%; left: 60%;">SI</button>
-    <div class="message" id="message"></div>
-</div>
+    <script>
+        const option1 = document.getElementById('option1');
+        const option2 = document.getElementById('option2');
+        const inputRespuesta = document.getElementById('respuestaInput');
+        const message = document.getElementById('message');
 
-<script>
-    const option1 = document.getElementById('option1');
-    const option2 = document.getElementById('option2');
-    const message = document.getElementById('message');
+        // Función para mover la opción "NO" aleatoriamente
+        function moveOption() {
+            const buttonRect = option1.getBoundingClientRect();
+            const containerRect = document.body.getBoundingClientRect();
+            
+            const maxX = containerRect.width - buttonRect.width - 20;
+            const maxY = containerRect.height - buttonRect.height - 20;
 
-    // Función para mover la opción "NO" aleatoriamente
-    function moveOption() {
-        const buttonRect = option1.getBoundingClientRect();
-        const containerRect = document.body.getBoundingClientRect();
-        
-        const maxX = containerRect.width - buttonRect.width - 20;
-        const maxY = containerRect.height - buttonRect.height - 20;
+            let randomX = Math.random() * maxX;
+            let randomY = Math.random() * maxY;
 
-        let randomX = Math.random() * maxX;
-        let randomY = Math.random() * maxY;
+            option1.style.left = `${randomX}px`;
+            option1.style.top = `${randomY}px`;
+        }
 
-        option1.style.left = `${randomX}px`;
-        option1.style.top = `${randomY}px`;
-    }
+        document.addEventListener('mousemove', (e) => {
+            const buttonRect = option1.getBoundingClientRect();
+            const distance = Math.hypot(e.clientX - (buttonRect.left + buttonRect.width / 2), e.clientY - (buttonRect.top + buttonRect.height / 2));
 
-    document.addEventListener('mousemove', (e) => {
-        const buttonRect = option1.getBoundingClientRect();
-        const distance = Math.hypot(e.clientX - (buttonRect.left + buttonRect.width / 2), e.clientY - (buttonRect.top + buttonRect.height / 2));
+            if (distance < 50) {
+                moveOption();
+            }
+        });
 
-        if (distance < 50) {
+        option1.addEventListener('click', (e) => {
+            e.preventDefault();
             moveOption();
-        }
-    });
+            message.innerText = 'No puedes elegir NO, intenta con SI.';
+            message.style.display = 'block';
+        });
 
-    option2.addEventListener('click', () => {
-        message.innerText = 'Yo sabia que dirias que si🥰🥰🥰 ¡¡Ya sabes, un helado tambien me debes!!.';
-        message.style.display = 'block';
-        message.style.opacity = 1;
-        option1.style.display = 'none';
-        option2.style.backgroundColor = '#28a745';
-        
-        createHearts(); // Llamada a la función para crear corazones
-    });
-
-    option1.addEventListener('click', (e) => {
-        e.preventDefault();
-        moveOption();
-        message.innerText = 'No puedes elegir NO, intenta con SI.';
-        message.style.display = 'block';
-        message.style.opacity = 1;
-    });
-
-    // Función para crear corazones animados
-    function createHearts() {
-        for (let i = 0; i < 15; i++) {
-            const heart = document.createElement('div');
-            heart.classList.add('heart');
-            heart.innerText = '❤️';
-            document.body.appendChild(heart);
-
-            // Posición y tamaño aleatoria
-            heart.style.left = `${Math.random() * 100}vw`;
-            heart.style.top = `${Math.random() * 100}vh`;
-            heart.style.fontSize = `${Math.random() * 80 + 80}px`;
-
-            // Animación de aparición y subida
-            heart.style.opacity = 2;
-            heart.style.animation = `pulse 1.5s ease-in-out infinite, moveUp 3s ease ${Math.random() * 2}s`;
-
-            // Quitar el corazón después de unos segundos
-            setTimeout(() => {
-                heart.remove();
-            }, 10000);
-        }
-    }
-</script>
-
+        option2.addEventListener('click', () => {
+            inputRespuesta.value = 'SI'; // Establece el valor de la respuesta como "SI"
+            message.innerText = 'Yo sabía que dirías que sí🥰🥰🥰 ¡¡Ya sabes, un helado también me debes!!';
+            message.style.display = 'block';
+        });
+    </script>
 </body>
 </html>
+
 
 
 
