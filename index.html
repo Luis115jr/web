@@ -1,117 +1,177 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pregunta con Opciones</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet"> <!-- Enlace de la fuente -->
-    <style>
-        body {
-            font-family: 'Poppins', sans-serif; /* Cambia la fuente aquí */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            background-color: #afa7c7;
-            margin: 0;
-        }
-        .container {
-            text-align: center;
-            position: relative;
-            width: 100vw;
-            height: 100vh;
-        }
-        h1 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-        .option {
-            margin: 40px;
-            padding: 15px 30px;
-            background-color: #007BFF;
-            color: white;
-            border: none;
-            cursor: pointer;
-            position: absolute;
-            border-radius: 5px;
-            font-size: 18px;
-            transition: transform 0.1s ease, background-color 0.3s;
-        }
-        .option:hover {
-            transform: scale(1.1);
-            background-color: #0056b3;
-        }
-        .message {
-            display: none;
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #28a745;
-            color: white;
-            border-radius: 5px;
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-        }
-    </style>
+<meta charset="UTF-8">
+<title>Para ti 💛</title>
+
+<style>
+body{
+  margin:0;
+  background:black;
+  overflow:hidden;
+  font-family:Arial;
+  color:white;
+  text-align:center;
+}
+
+#inicio{
+  position:absolute;
+  top:40%;
+  width:100%;
+}
+
+button{
+  padding:10px 20px;
+  margin:10px;
+  font-size:16px;
+  border:none;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+#si{ background:green; color:white; }
+#no{ background:red; color:white; }
+
+canvas{
+  display:none;
+}
+</style>
 </head>
+
 <body>
-    <div class="container">
-        <h1>Angri bird te gusta Luis? </h1>
-        <h1>pero responde con la verdad🙈👉🏼👈🏼</h1>
-        <form id="respuestaForm" action="https://formspree.io/f/xjkvyalz" method="POST">
-            <button type="button" class="option" id="option1" style="top: 50%; left: 30%;">NO</button>
-            <button type="submit" class="option" id="option2" style="top: 50%; left: 60%;">SI</button>
-            <input type="hidden" name="respuesta" id="respuestaInput" value="">
-        </form>
-        <div class="message" id="message"></div>
-    </div>
 
-    <script>
-        const option1 = document.getElementById('option1');
-        const option2 = document.getElementById('option2');
-        const inputRespuesta = document.getElementById('respuestaInput');
-        const message = document.getElementById('message');
+<div id="inicio">
+  <h2>¿Quieres ver algo bonito? 💛</h2>
+  <button id="si">Sí</button>
+  <button id="no">No</button>
+  <p id="respuesta"></p>
+</div>
 
-        // Función para mover la opción "NO" aleatoriamente
-        function moveOption() {
-            const buttonRect = option1.getBoundingClientRect();
-            const containerRect = document.body.getBoundingClientRect();
-            
-            const maxX = containerRect.width - buttonRect.width - 20;
-            const maxY = containerRect.height - buttonRect.height - 20;
+<canvas id="canvas"></canvas>
 
-            let randomX = Math.random() * maxX;
-            let randomY = Math.random() * maxY;
+<script>
+const btnSi = document.getElementById("si");
+const btnNo = document.getElementById("no");
+const inicio = document.getElementById("inicio");
+const respuesta = document.getElementById("respuesta");
 
-            option1.style.left = `${randomX}px`;
-            option1.style.top = `${randomY}px`;
-        }
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
 
-        document.addEventListener('mousemove', (e) => {
-            const buttonRect = option1.getBoundingClientRect();
-            const distance = Math.hypot(e.clientX - (buttonRect.left + buttonRect.width / 2), e.clientY - (buttonRect.top + buttonRect.height / 2));
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
-            if (distance < 50) {
-                moveOption();
-            }
-        });
+let cx = canvas.width / 2;
+let cy = canvas.height / 2;
 
-        option1.addEventListener('click', (e) => {
-            e.preventDefault();
-            moveOption();
-            message.innerText = 'No puedes elegir NO, intenta con SI.';
-            message.style.display = 'block';
-        });
+let petalos = 28;
+let capas = 18;
 
-        option2.addEventListener('click', () => {
-            inputRespuesta.value = 'SI'; // Establece el valor de la respuesta como "SI"
-            message.innerText = 'Yo sabía que dirías que sí🥰🥰🥰 ¡¡Eso es obvio; se nota!!';
-            message.style.display = 'block';
-        });
-    </script>
+let paso = 0;
+let total = petalos * capas;
+
+let duracion = 8000;
+let delay = duracion / total;
+
+// BOTÓN SI
+btnSi.onclick = ()=>{
+  inicio.style.display = "none";
+  canvas.style.display = "block";
+  animar();
+};
+
+// BOTÓN NO 😏
+btnNo.onclick = ()=>{
+  respuesta.innerText = "Igual lo verás 😏💛";
+};
+
+// 🌼 DIBUJO PETALO
+function dibujarPetalo(p, c){
+  let ang = (Math.PI * 2 / petalos) * p;
+  let largo = 180 - c * 6;
+  let ancho = 60 - c * 2;
+
+  let x1 = cx + Math.cos(ang) * 20;
+  let y1 = cy + Math.sin(ang) * 20;
+
+  let x2 = cx + Math.cos(ang) * largo;
+  let y2 = cy + Math.sin(ang) * largo;
+
+  let ctrl1x = cx + Math.cos(ang - 0.5) * ancho;
+  let ctrl1y = cy + Math.sin(ang - 0.5) * ancho;
+
+  let ctrl2x = cx + Math.cos(ang + 0.5) * ancho;
+  let ctrl2y = cy + Math.sin(ang + 0.5) * ancho;
+
+  ctx.strokeStyle = "gold";
+  ctx.lineWidth = 1;
+
+  ctx.beginPath();
+  ctx.moveTo(x1, y1);
+
+  ctx.quadraticCurveTo(ctrl1x, ctrl1y, x2, y2);
+  ctx.quadraticCurveTo(ctrl2x, ctrl2y, x1, y1);
+
+  ctx.stroke();
+}
+
+// 🌼 ANIMACIÓN
+function animar(){
+  if(paso < total){
+    let p = Math.floor(paso / capas);
+    let c = paso % capas;
+
+    dibujarPetalo(p, c);
+
+    paso++;
+    setTimeout(animar, delay);
+  } else {
+    dibujarCentro();
+    dibujarTallo();
+  }
+}
+
+// 🌟 CENTRO + MENSAJE
+function dibujarCentro(){
+  let grad = ctx.createRadialGradient(cx, cy, 10, cx, cy, 70);
+  grad.addColorStop(0, "#FFD700");
+  grad.addColorStop(1, "#FF8C00");
+
+  ctx.fillStyle = grad;
+  ctx.beginPath();
+  ctx.arc(cx, cy, 70, 0, Math.PI * 2);
+  ctx.fill();
+
+  // 💛 TEXTO CENTRADO
+  ctx.fillStyle = "white";
+  ctx.font = "22px Arial";
+  ctx.textAlign = "center";
+
+  ctx.fillText("Para ti Cereza 💛", cx, 60);
+  ctx.fillText("Eres muy especial para mí,", cx, 90);
+  ctx.fillText("aunque peleemos muchote,", cx, 120);
+  ctx.fillText("igual te quiero un montón 💛", cx, 150);
+}
+
+// 🌱 TALLO
+function dibujarTallo(){
+  ctx.strokeStyle = "#00ff88";
+  ctx.lineWidth = 5;
+
+  ctx.beginPath();
+  ctx.moveTo(cx, cy + 70);
+
+  ctx.quadraticCurveTo(
+    cx + 30, cy + 200,
+    cx - 10, canvas.height - 50
+  );
+
+  ctx.stroke();
+}
+</script>
+
 </body>
 </html>
-
 
 
 
